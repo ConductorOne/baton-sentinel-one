@@ -41,7 +41,7 @@ baton resources
 
 # Data Model
 
-`baton-sentinel-one` will pull down information about the following GitHub resources:
+`baton-sentinel-one` will pull down information about the following SentinelOne resources:
 
 - Accounts
 - Users
