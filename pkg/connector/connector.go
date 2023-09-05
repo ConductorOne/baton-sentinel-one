@@ -5,36 +5,118 @@ import (
 	"fmt"
 
 	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
+	"github.com/conductorone/baton-sdk/pkg/annotations"
+	"github.com/conductorone/baton-sdk/pkg/connectorbuilder"
+	"github.com/conductorone/baton-sdk/pkg/uhttp"
+	"github.com/conductorone/baton-sentinel-one/pkg/sentinelone"
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
 )
 
-// TODO: implement your connector here
-type connectorImpl struct {
+type SentinelOne struct {
+	client *sentinelone.Client
 }
 
-func (c *connectorImpl) ListResourceTypes(ctx context.Context, req *v2.ResourceTypesServiceListResourceTypesRequest) (*v2.ResourceTypesServiceListResourceTypesResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+var (
+	resourceTypeAccount = &v2.ResourceType{
+		Id:          "account",
+		DisplayName: "Account",
+	}
+	resourceTypeUser = &v2.ResourceType{
+		Id:          "user",
+		DisplayName: "User",
+		Traits: []v2.ResourceType_Trait{
+			v2.ResourceType_TRAIT_USER,
+		},
+		Annotations: annotationsForUserResourceType(),
+	}
+	resourceTypeServiceUser = &v2.ResourceType{
+		Id:          "service_user",
+		DisplayName: "Service User",
+		Traits: []v2.ResourceType_Trait{
+			v2.ResourceType_TRAIT_USER,
+		},
+		Annotations: annotationsForUserResourceType(),
+	}
+	resourceTypeRole = &v2.ResourceType{
+		Id:          "role",
+		DisplayName: "Role",
+		Traits: []v2.ResourceType_Trait{
+			v2.ResourceType_TRAIT_ROLE,
+		},
+	}
+	resourceTypeSite = &v2.ResourceType{
+		Id:          "site",
+		DisplayName: "Site",
+	}
+)
+
+func (s *SentinelOne) ResourceSyncers(ctx context.Context) []connectorbuilder.ResourceSyncer {
+	return []connectorbuilder.ResourceSyncer{
+		accountBuilder(s.client),
+		userBuilder(s.client),
+		serviceUserBuilder(s.client),
+		roleBuilder(s.client),
+		siteBuilder(s.client),
+	}
 }
 
-func (c *connectorImpl) ListResources(ctx context.Context, req *v2.ResourcesServiceListResourcesRequest) (*v2.ResourcesServiceListResourcesResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+func (s *SentinelOne) Metadata(ctx context.Context) (*v2.ConnectorMetadata, error) {
+	return &v2.ConnectorMetadata{
+		DisplayName: "SentinelOne",
+		Description: "Connector syncing SentinelOne users, their roles and groups to Baton.",
+	}, nil
 }
 
-func (c *connectorImpl) ListEntitlements(ctx context.Context, req *v2.EntitlementsServiceListEntitlementsRequest) (*v2.EntitlementsServiceListEntitlementsResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+// Validates that the user has access to all relevant resources.
+// It's not defined which role is needed to fetch all resources so we need to check that user has access to all of them.
+func (s *SentinelOne) Validate(ctx context.Context) (annotations.Annotations, error) {
+	_, _, err := s.client.GetAccounts(ctx, sentinelone.ParamsMap{
+		"limit": "1",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accounts: %w", err)
+	}
+
+	_, _, err = s.client.GetSites(ctx, sentinelone.ParamsMap{
+		"limit": "1",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get sites: %w", err)
+	}
+	_, _, err = s.client.GetUsers(ctx, sentinelone.ParamsMap{
+		"limit": "1",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users: %w", err)
+	}
+
+	_, _, err = s.client.GetServiceUsers(ctx, sentinelone.ParamsMap{
+		"limit": "1",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get service users: %w", err)
+	}
+
+	_, _, err = s.client.GetPredefinedRoles(ctx, sentinelone.ParamsMap{
+		"limit": "1",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get roles: %w", err)
+	}
+
+	return nil, nil
 }
 
-func (c *connectorImpl) ListGrants(ctx context.Context, req *v2.GrantsServiceListGrantsRequest) (*v2.GrantsServiceListGrantsResponse, error) {
-	return nil, fmt.Errorf("not implemented")
-}
+// New returns the SentinelOne connector.
+func New(ctx context.Context, baseUrl, token string) (*SentinelOne, error) {
+	httpClient, err := uhttp.NewClient(ctx, uhttp.WithLogger(true, ctxzap.Extract(ctx)))
+	if err != nil {
+		return nil, err
+	}
 
-func (c *connectorImpl) GetMetadata(ctx context.Context, req *v2.ConnectorServiceGetMetadataRequest) (*v2.ConnectorServiceGetMetadataResponse, error) {
-	return nil, fmt.Errorf("not implemented")
-}
+	client := sentinelone.NewClient(httpClient, baseUrl, token)
 
-func (c *connectorImpl) Validate(ctx context.Context, req *v2.ConnectorServiceValidateRequest) (*v2.ConnectorServiceValidateResponse, error) {
-	return nil, fmt.Errorf("not implemented")
-}
-
-func (c *connectorImpl) GetAsset(req *v2.AssetServiceGetAssetRequest, server v2.AssetService_GetAssetServer) error {
-	return fmt.Errorf("not implemented")
+	return &SentinelOne{
+		client: client,
+	}, nil
 }

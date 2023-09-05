@@ -1,10 +1,10 @@
-project_name: baton-example
+project_name: baton-sentinel-one
 builds:
-  - binary: baton-example
+  - binary: baton-sentinel-one
     env:
       - CGO_ENABLED=0
     id: linux
-    main: ./cmd/baton-example
+    main: ./cmd/baton-sentinel-one
     goos:
       - linux
     goarch:
@@ -15,37 +15,37 @@ dockers:
     goos: linux
     goarch: amd64
     image_templates:
-      - "ghcr.io/conductorone/baton-example:{{ .Version }}-amd64"
-      - "ghcr.io/conductorone/baton-example:latest-amd64"
+      - "ghcr.io/conductorone/baton-sentinel-one:{{ .Version }}-amd64"
+      - "ghcr.io/conductorone/baton-sentinel-one:latest-amd64"
     build_flag_templates:
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title=baton-example"
+      - "--label=org.opencontainers.image.title=baton-sentinel-one"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source=https://github.com/conductorone/baton-example"
+      - "--label=org.opencontainers.image.source=https://github.com/conductorone/baton-sentinel-one"
   - use: buildx
     goos: linux
     goarch: arm64
     image_templates:
-      - "ghcr.io/conductorone/baton-example:{{ .Version }}-arm64"
-      - "ghcr.io/conductorone/baton-example:latest-arm64"
+      - "ghcr.io/conductorone/baton-sentinel-one:{{ .Version }}-arm64"
+      - "ghcr.io/conductorone/baton-sentinel-one:latest-arm64"
     build_flag_templates:
       - "--platform=linux/arm64/v8"
       - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title=baton-example"
+      - "--label=org.opencontainers.image.title=baton-sentinel-one"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source=https://github.com/conductorone/baton-example"
+      - "--label=org.opencontainers.image.source=https://github.com/conductorone/baton-sentinel-one"
 docker_manifests:
-  - name_template: ghcr.io/conductorone/baton-example:{{ .Version }}
+  - name_template: ghcr.io/conductorone/baton-sentinel-one:{{ .Version }}
     image_templates:
-      - ghcr.io/conductorone/baton-example:{{ .Version }}-amd64
-      - ghcr.io/conductorone/baton-example:{{ .Version }}-arm64
-  - name_template: ghcr.io/conductorone/baton-example:latest
+      - ghcr.io/conductorone/baton-sentinel-one:{{ .Version }}-amd64
+      - ghcr.io/conductorone/baton-sentinel-one:{{ .Version }}-arm64
+  - name_template: ghcr.io/conductorone/baton-sentinel-one:latest
     image_templates:
-      - ghcr.io/conductorone/baton-example:latest-amd64
-      - ghcr.io/conductorone/baton-example:latest-arm64
+      - ghcr.io/conductorone/baton-sentinel-one:latest-amd64
+      - ghcr.io/conductorone/baton-sentinel-one:latest-arm64
 checksum:
   disable: true
 release:

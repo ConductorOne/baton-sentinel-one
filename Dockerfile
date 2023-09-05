@@ -1,3 +1,3 @@
 FROM gcr.io/distroless/static-debian11:nonroot
-ENTRYPOINT ["/baton-example"]
-COPY baton-example /
+ENTRYPOINT ["/baton-sentinel-one"]
+COPY baton-sentinel-one /
