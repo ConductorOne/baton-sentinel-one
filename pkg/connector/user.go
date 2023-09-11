@@ -32,7 +32,7 @@ func userResource(user *sentinelone.User, parentResourceID *v2.ResourceId) (*v2.
 
 	userTraitOptions := []rs.UserTraitOption{
 		rs.WithUserProfile(profile),
-		rs.WithStatus(v2.UserTrait_Status_STATUS_UNSPECIFIED),
+		rs.WithStatus(v2.UserTrait_Status_STATUS_ENABLED),
 		rs.WithEmail(user.Email, true),
 	}
 
