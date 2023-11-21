@@ -63,7 +63,7 @@ func (s *SentinelOne) ResourceSyncers(ctx context.Context) []connectorbuilder.Re
 func (s *SentinelOne) Metadata(ctx context.Context) (*v2.ConnectorMetadata, error) {
 	return &v2.ConnectorMetadata{
 		DisplayName: "SentinelOne",
-		Description: "Connector syncing SentinelOne users, their roles and groups to Baton.",
+		Description: "Connector syncing SentinelOne accounts, users, service users, roles and sites to Baton.",
 	}, nil
 }
 
