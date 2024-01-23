@@ -3,13 +3,15 @@ package connector
 import (
 	"context"
 	"fmt"
+	"path"
 
 	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
 	"github.com/conductorone/baton-sdk/pkg/annotations"
 	"github.com/conductorone/baton-sdk/pkg/connectorbuilder"
 	"github.com/conductorone/baton-sdk/pkg/uhttp"
-	"github.com/conductorone/baton-sentinel-one/pkg/sentinelone"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
+
+	"github.com/conductorone/baton-sentinel-one/pkg/sentinelone"
 )
 
 type SentinelOne struct {
@@ -114,7 +116,7 @@ func New(ctx context.Context, baseUrl, token string) (*SentinelOne, error) {
 		return nil, err
 	}
 
-	client := sentinelone.NewClient(httpClient, baseUrl, token)
+	client := sentinelone.NewClient(httpClient, path.Join(baseUrl, "web/api/v2.1/"), token)
 
 	return &SentinelOne{
 		client: client,
