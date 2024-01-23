@@ -8,9 +8,10 @@ import (
 	"github.com/conductorone/baton-sdk/pkg/cli"
 	"github.com/conductorone/baton-sdk/pkg/connectorbuilder"
 	"github.com/conductorone/baton-sdk/pkg/types"
-	"github.com/conductorone/baton-sentinel-one/pkg/connector"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
 	"go.uber.org/zap"
+
+	"github.com/conductorone/baton-sentinel-one/pkg/connector"
 )
 
 var version = "dev"
@@ -38,8 +39,7 @@ func main() {
 func getConnector(ctx context.Context, cfg *config) (types.ConnectorServer, error) {
 	l := ctxzap.Extract(ctx)
 
-	baseUrl := fmt.Sprintf("%s/web/api/v2.1/", cfg.ManagementUrl)
-	sentineloneConnector, err := connector.New(ctx, baseUrl, cfg.Token)
+	sentineloneConnector, err := connector.New(ctx, cfg.ManagementUrl, cfg.Token)
 	if err != nil {
 		l.Error("error creating connector", zap.Error(err))
 		return nil, err
