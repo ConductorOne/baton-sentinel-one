@@ -3,7 +3,7 @@ package connector
 import (
 	"context"
 	"fmt"
-	"path"
+	"net/url"
 
 	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
 	"github.com/conductorone/baton-sdk/pkg/annotations"
@@ -116,7 +116,13 @@ func New(ctx context.Context, baseUrl, token string) (*SentinelOne, error) {
 		return nil, err
 	}
 
-	client := sentinelone.NewClient(httpClient, path.Join(baseUrl, "web/api/v2.1/"), token)
+	clientUrl, err := url.Parse(baseUrl)
+	if err != nil {
+		return nil, err
+	}
+	clientUrl.Path = "/web/api/v2.1/"
+
+	client := sentinelone.NewClient(httpClient, clientUrl.String(), token)
 
 	return &SentinelOne{
 		client: client,
