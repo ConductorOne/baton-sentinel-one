@@ -1,10 +1,12 @@
 module github.com/conductorone/baton-sentinel-one
 
-go 1.19
+go 1.23
 
 require (
 	github.com/conductorone/baton-sdk v0.1.4
+	github.com/ennyjfrick/ruleguard-logfatal v0.0.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
+	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/spf13/cobra v1.7.0
 	go.uber.org/zap v1.25.0
 )
@@ -68,7 +70,7 @@ require (
 	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
-	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/term v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
