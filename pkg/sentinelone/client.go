@@ -67,8 +67,8 @@ func (c *Client) GetUsers(ctx context.Context, params ParamsMap) ([]User, string
 		return nil, "", err
 	}
 
-	if res.ErrorResponse.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get users: %v", res.ErrorResponse.Errors)
+	if res.Errors != nil {
+		return nil, "", fmt.Errorf("failed to get users: %v", res.Errors)
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -90,8 +90,8 @@ func (c *Client) GetServiceUsers(ctx context.Context, params ParamsMap) ([]Servi
 		return nil, "", err
 	}
 
-	if res.ErrorResponse.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get service users: %v", res.ErrorResponse.Errors)
+	if res.Errors != nil {
+		return nil, "", fmt.Errorf("failed to get service users: %v", res.Errors)
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -113,8 +113,8 @@ func (c *Client) GetAccounts(ctx context.Context, params ParamsMap) ([]Account, 
 		return nil, "", err
 	}
 
-	if res.ErrorResponse.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get accounts: %v", res.ErrorResponse.Errors)
+	if res.Errors != nil {
+		return nil, "", fmt.Errorf("failed to get accounts: %v", res.Errors)
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -142,8 +142,8 @@ func (c *Client) GetSites(ctx context.Context, params ParamsMap) ([]Site, string
 		return nil, "", err
 	}
 
-	if res.ErrorResponse.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get sites: %v", res.ErrorResponse.Errors)
+	if res.Errors != nil {
+		return nil, "", fmt.Errorf("failed to get sites: %v", res.Errors)
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -165,8 +165,8 @@ func (c *Client) GetPredefinedRoles(ctx context.Context, params ParamsMap) ([]Ro
 		return nil, "", err
 	}
 
-	if res.ErrorResponse.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get roles: %v", res.ErrorResponse.Errors)
+	if res.Errors != nil {
+		return nil, "", fmt.Errorf("failed to get roles: %v", res.Errors)
 	}
 
 	if res.Pagination.NextCursor != "" {
