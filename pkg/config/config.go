@@ -21,6 +21,11 @@ var (
 		field.WithPlaceholder("Your SentinelOne base URL"),
 		field.WithRequired(true),
 	)
+
+	BaseURLField = field.StringField(
+		"base-url",
+		field.WithDescription("Override the SentinelOne API URL (for testing)"),
+	)
 )
 
 //go:generate go run ./gen
@@ -28,6 +33,7 @@ var Config = field.NewConfiguration(
 	[]field.SchemaField{
 		APIToken,
 		ManagementConsoleURL,
+		BaseURLField,
 	},
 	field.WithConnectorDisplayName("SentinelOne"),
 	field.WithHelpUrl("/docs/baton/sentinelone"),

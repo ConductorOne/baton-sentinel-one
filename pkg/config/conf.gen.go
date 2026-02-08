@@ -6,6 +6,7 @@ import "reflect"
 type Sentinelone struct {
 	ApiToken string `mapstructure:"api-token"`
 	ManagementConsoleUrl string `mapstructure:"management-console-url"`
+	BaseUrl string `mapstructure:"base-url"`
 }
 
 func (c *Sentinelone) findFieldByTag(tagValue string) (any, bool) {

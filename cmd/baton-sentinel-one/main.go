@@ -44,7 +44,12 @@ func main() {
 func getConnector(ctx context.Context, c *cfg.Sentinelone) (types.ConnectorServer, error) {
 	l := ctxzap.Extract(ctx)
 
-	sentineloneConnector, err := connector.New(ctx, c.ManagementConsoleUrl, c.ApiToken)
+	baseURL := c.ManagementConsoleUrl
+	if c.BaseUrl != "" {
+		baseURL = c.BaseUrl
+	}
+
+	sentineloneConnector, err := connector.New(ctx, baseURL, c.ApiToken)
 	if err != nil {
 		l.Error("error creating connector", zap.Error(err))
 		return nil, err
