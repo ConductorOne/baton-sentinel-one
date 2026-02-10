@@ -1,4 +1,4 @@
-# `baton-sentinel-one` [![Go Reference](https://pkg.go.dev/badge/github.com/conductorone/baton-sentinel-one.svg)](https://pkg.go.dev/github.com/conductorone/baton-sentinel-one) ![main ci](https://github.com/conductorone/baton-sentinel-one/actions/workflows/main.yaml/badge.svg)
+# `baton-sentinel-one` [![Go Reference](https://pkg.go.dev/badge/github.com/conductorone/baton-sentinel-one.svg)](https://pkg.go.dev/github.com/conductorone/baton-sentinel-one) ![verify](https://github.com/conductorone/baton-sentinel-one/actions/workflows/verify.yaml/badge.svg)
 
 `baton-sentinel-one` is a connector for SentinelOne built using the [Baton SDK](https://github.com/conductorone/baton-sdk). It communicates with the SentinelOne API to sync data about users, service users, sites, roles and accounts.
 Check out [Baton](https://github.com/conductorone/baton) to learn more about the project in general.
