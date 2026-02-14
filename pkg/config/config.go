@@ -25,6 +25,7 @@ var (
 	BaseURLField = field.StringField(
 		"base-url",
 		field.WithDescription("Override the SentinelOne API URL (for testing)"),
+		field.WithHidden(true),
 	)
 )
 
