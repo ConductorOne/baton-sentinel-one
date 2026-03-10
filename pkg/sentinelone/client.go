@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -207,6 +208,11 @@ func (c *Client) doRequest(ctx context.Context, url string, res interface{}, que
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		return fmt.Errorf("sentinel-one-connector: unexpected HTTP status %d: %s", resp.StatusCode, body)
+	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return err
