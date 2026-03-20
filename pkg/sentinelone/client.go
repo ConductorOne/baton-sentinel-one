@@ -2,15 +2,16 @@ package sentinelone
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/conductorone/baton-sdk/pkg/uhttp"
+	"google.golang.org/grpc/codes"
 )
 
 type Client struct {
-	httpClient *http.Client
+	httpClient *uhttp.BaseHttpClient
 	token      string
 	baseUrl    string
 }
@@ -34,6 +35,39 @@ type ErrorResponse struct {
 	Errors []Error `json:"errors"`
 }
 
+func grpcCodeFromSentinelOneError(code int) codes.Code {
+	// SentinelOne error codes encode the HTTP status in the leading digits
+	// (e.g. 4010010 → 401, 4030050 → 403). Dividing by 10000 extracts it.
+	switch code / 10000 {
+	case 401:
+		return codes.Unauthenticated
+	case 403:
+		return codes.PermissionDenied
+	case 404:
+		return codes.NotFound
+	case 429:
+		return codes.DeadlineExceeded
+	case 500:
+		return codes.Internal
+	case 503:
+		return codes.Unavailable
+	default:
+		return codes.Unknown
+	}
+}
+
+func (e ErrorResponse) Err(op string) error {
+	if len(e.Errors) == 0 {
+		return nil
+	}
+	first := e.Errors[0]
+	return uhttp.WrapErrors(
+		grpcCodeFromSentinelOneError(first.Code),
+		fmt.Sprintf("baton-sentinel-one: %s: %s", op, first.Detail),
+		fmt.Errorf("code=%d title=%s", first.Code, first.Title),
+	)
+}
+
 type Response[T any] struct {
 	PaginationResponse
 	ErrorResponse
@@ -50,7 +84,7 @@ const (
 
 func NewClient(httpClient *http.Client, baseUrl, token string) *Client {
 	return &Client{
-		httpClient: httpClient,
+		httpClient: uhttp.NewBaseHttpClient(httpClient),
 		token:      token,
 		baseUrl:    baseUrl,
 	}
@@ -63,13 +97,17 @@ func (c *Client) GetUsers(ctx context.Context, params ParamsMap) ([]User, string
 		queryParams = createParams(params)
 	}
 
-	var res Response[User]
-	if err := c.doRequest(ctx, fmt.Sprint(c.baseUrl, usersEndpoint), &res, queryParams); err != nil {
-		return nil, "", err
+	rawURL, err := url.JoinPath(c.baseUrl, usersEndpoint)
+	if err != nil {
+		return nil, "", fmt.Errorf("baton-sentinel-one: get users: failed to build URL: %w", err)
 	}
 
-	if res.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get users: %v", res.Errors)
+	var res Response[User]
+	if err := c.doRequest(ctx, rawURL, &res, queryParams); err != nil {
+		return nil, "", err
+	}
+	if err := res.Err("get users"); err != nil {
+		return nil, "", err
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -86,13 +124,17 @@ func (c *Client) GetServiceUsers(ctx context.Context, params ParamsMap) ([]Servi
 		queryParams = createParams(params)
 	}
 
-	var res Response[ServiceUser]
-	if err := c.doRequest(ctx, fmt.Sprint(c.baseUrl, serviceUsersEndpoint), &res, queryParams); err != nil {
-		return nil, "", err
+	rawURL, err := url.JoinPath(c.baseUrl, serviceUsersEndpoint)
+	if err != nil {
+		return nil, "", fmt.Errorf("baton-sentinel-one: get service users: failed to build URL: %w", err)
 	}
 
-	if res.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get service users: %v", res.Errors)
+	var res Response[ServiceUser]
+	if err := c.doRequest(ctx, rawURL, &res, queryParams); err != nil {
+		return nil, "", err
+	}
+	if err := res.Err("get service users"); err != nil {
+		return nil, "", err
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -109,13 +151,17 @@ func (c *Client) GetAccounts(ctx context.Context, params ParamsMap) ([]Account, 
 		queryParams = createParams(params)
 	}
 
-	var res Response[Account]
-	if err := c.doRequest(ctx, fmt.Sprint(c.baseUrl, accountsEndpoint), &res, queryParams); err != nil {
-		return nil, "", err
+	rawURL, err := url.JoinPath(c.baseUrl, accountsEndpoint)
+	if err != nil {
+		return nil, "", fmt.Errorf("baton-sentinel-one: get accounts: failed to build URL: %w", err)
 	}
 
-	if res.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get accounts: %v", res.Errors)
+	var res Response[Account]
+	if err := c.doRequest(ctx, rawURL, &res, queryParams); err != nil {
+		return nil, "", err
+	}
+	if err := res.Err("get accounts"); err != nil {
+		return nil, "", err
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -139,12 +185,15 @@ func (c *Client) GetSites(ctx context.Context, params ParamsMap) ([]Site, string
 			Sites []Site `json:"sites"`
 		} `json:"data"`
 	}
-	if err := c.doRequest(ctx, fmt.Sprint(c.baseUrl, sitesEndpoint), &res, queryParams); err != nil {
+	rawURL, err := url.JoinPath(c.baseUrl, sitesEndpoint)
+	if err != nil {
+		return nil, "", fmt.Errorf("baton-sentinel-one: get sites: failed to build URL: %w", err)
+	}
+	if err := c.doRequest(ctx, rawURL, &res, queryParams); err != nil {
 		return nil, "", err
 	}
-
-	if res.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get sites: %v", res.Errors)
+	if err := res.Err("get sites"); err != nil {
+		return nil, "", err
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -161,13 +210,17 @@ func (c *Client) GetPredefinedRoles(ctx context.Context, params ParamsMap) ([]Ro
 		queryParams = createParams(params)
 	}
 
-	var res Response[Role]
-	if err := c.doRequest(ctx, fmt.Sprint(c.baseUrl, rolesEndpoint), &res, queryParams); err != nil {
-		return nil, "", err
+	rawURL, err := url.JoinPath(c.baseUrl, rolesEndpoint)
+	if err != nil {
+		return nil, "", fmt.Errorf("baton-sentinel-one: get predefined roles: failed to build URL: %w", err)
 	}
 
-	if res.Errors != nil {
-		return nil, "", fmt.Errorf("failed to get roles: %v", res.Errors)
+	var res Response[Role]
+	if err := c.doRequest(ctx, rawURL, &res, queryParams); err != nil {
+		return nil, "", err
+	}
+	if err := res.Err("get predefined roles"); err != nil {
+		return nil, "", err
 	}
 
 	if res.Pagination.NextCursor != "" {
@@ -190,33 +243,32 @@ func createParams(params ParamsMap) url.Values {
 	return urlParams
 }
 
-func (c *Client) doRequest(ctx context.Context, url string, res interface{}, queryParams url.Values) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+func (c *Client) doRequest(ctx context.Context, rawURL string, res interface{}, queryParams url.Values) error {
+	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("baton-sentinel-one: failed to parse URL: %w", err)
 	}
-
 	if queryParams != nil {
-		req.URL.RawQuery = queryParams.Encode()
+		parsedURL.RawQuery = queryParams.Encode()
 	}
 
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("ApiToken %s", c.token))
-	resp, err := c.httpClient.Do(req)
+	req, err := c.httpClient.NewRequest(
+		ctx,
+		http.MethodGet,
+		parsedURL,
+		uhttp.WithHeader("Accept", "application/json"),
+		uhttp.WithHeader("Authorization", fmt.Sprintf("ApiToken %s", c.token)),
+	)
 	if err != nil {
-		return err
+		return fmt.Errorf("baton-sentinel-one: failed to build request: %w", err)
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
-		return fmt.Errorf("sentinel-one-connector: unexpected HTTP status %d: %s", resp.StatusCode, body)
+	resp, err := c.httpClient.Do(req, uhttp.WithJSONResponse(res))
+	if resp != nil {
+		defer resp.Body.Close()
 	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return err
+	if err != nil {
+		return fmt.Errorf("baton-sentinel-one: request failed: %w", err)
 	}
-
 	return nil
 }
