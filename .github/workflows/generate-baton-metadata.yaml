@@ -29,19 +29,14 @@ jobs:
         run: go build -o connector ./cmd/baton-sentinel-one
 
       - name: Run and save capabilities output
-        run: ./connector capabilities | jq --sort-keys . > baton_capabilities.json
-
-      - name: Run and save config output
-        run: ./connector config | jq --sort-keys . > config_schema.json
+        run: ./connector capabilities > baton_capabilities.json
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
           message: "Updating baton capabilities."
-          add: |
-            baton_capabilities.json
-            config_schema.json
+          add: "baton_capabilities.json"
 
   validate_metadata:
     if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]'
@@ -63,10 +58,7 @@ jobs:
         run: go build -o connector ./cmd/baton-sentinel-one
 
       - name: Run and save capabilities output
-        run: ./connector capabilities | jq --sort-keys . > /tmp/caps_new.json
-
-      - name: Run and save config output
-        run: ./connector config | jq --sort-keys . > /tmp/config_new.json
+        run: ./connector capabilities > baton_capabilities.json
 
       # Check 1: verify committed JSON matches binary output
       - name: Verify committed metadata is up to date
@@ -76,20 +68,10 @@ jobs:
           CAPS_STALE=false
           CONFIG_STALE=false
 
-          jq --sort-keys . baton_capabilities.json > /tmp/caps_old.json 2>/dev/null || true
-          if ! diff -q /tmp/caps_old.json /tmp/caps_new.json > /dev/null 2>&1; then
+          if ! git diff --quiet -- baton_capabilities.json 2>/dev/null; then
             CAPS_STALE=true
             echo "::warning::baton_capabilities.json differs from binary output"
-            diff /tmp/caps_old.json /tmp/caps_new.json || true
-          fi
-
-          if [ -f config_schema.json ]; then
-            jq --sort-keys . config_schema.json > /tmp/config_old.json 2>/dev/null || true
-            if ! diff -q /tmp/config_old.json /tmp/config_new.json > /dev/null 2>&1; then
-              CONFIG_STALE=true
-              echo "::warning::config_schema.json differs from binary output"
-              diff /tmp/config_old.json /tmp/config_new.json || true
-            fi
+            git diff -- baton_capabilities.json
           fi
 
           if [ "$CAPS_STALE" = "true" ] || [ "$CONFIG_STALE" = "true" ]; then
@@ -121,9 +103,6 @@ jobs:
           if [ -n "$BASE_SHA" ]; then
             if ! git diff --quiet "$BASE_SHA" HEAD -- baton_capabilities.json 2>/dev/null; then
               CAPS_CHANGED=true
-            fi
-            if ! git diff --quiet "$BASE_SHA" HEAD -- config_schema.json 2>/dev/null; then
-              CONFIG_CHANGED=true
             fi
           fi
 
