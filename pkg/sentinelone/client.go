@@ -38,6 +38,13 @@ type ErrorResponse struct {
 func grpcCodeFromSentinelOneError(code int) codes.Code {
 	// SentinelOne error codes encode the HTTP status in the leading digits
 	// (e.g. 4010010 → 401, 4030050 → 403). Dividing by 10000 extracts it.
+	// The full error code list is only in the authenticated management console Swagger UI
+	// at https://<console>/web/api/v2.1 — there is no public page that documents this scheme.
+	// Third-party references that show real observed codes:
+	//   - LogicHub (4030010 example): https://help.logichub.com/docs/sentinelone
+	//   - XSOAR community (4010010 example): https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/problems-with-sentinelone-v2-integration-401/td-p/515694
+	//   - vradchenko PowerShell module (4000040 example): https://github.com/vradchenko/PowerShell-SentinelOne/blob/main/SentinelOne.ps1#L852
+	// Known codes: 4010010 = Authentication Failed, 4030010 = Insufficient permissions.
 	switch code / 10000 {
 	case 401:
 		return codes.Unauthenticated
@@ -61,9 +68,13 @@ func (e ErrorResponse) Err(op string) error {
 		return nil
 	}
 	first := e.Errors[0]
+	msg := fmt.Sprintf("baton-sentinel-one: %s: %s", op, first.Detail)
+	if extra := len(e.Errors) - 1; extra > 0 {
+		msg = fmt.Sprintf("%s (+%d more errors)", msg, extra)
+	}
 	return uhttp.WrapErrors(
 		grpcCodeFromSentinelOneError(first.Code),
-		fmt.Sprintf("baton-sentinel-one: %s: %s", op, first.Detail),
+		msg,
 		fmt.Errorf("code=%d title=%s", first.Code, first.Title),
 	)
 }
@@ -243,6 +254,15 @@ func createParams(params ParamsMap) url.Values {
 	return urlParams
 }
 
+// doRequest performs a GET request and decodes the JSON body into res.
+//
+// Error handling has two paths depending on what the API returns:
+//   - Non-200 HTTP status (e.g. 401, 403): uhttp intercepts it and returns a gRPC error
+//     derived from the HTTP status code. The JSON body is decoded but ignored for error
+//     purposes — grpcCodeFromSentinelOneError is never called.
+//   - HTTP 200 with errors in the JSON body: uhttp returns no error, so callers must
+//     call res.Err() after doRequest to check the errors array. This is the only path
+//     where grpcCodeFromSentinelOneError is actually used.
 func (c *Client) doRequest(ctx context.Context, rawURL string, res interface{}, queryParams url.Values) error {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -263,10 +283,7 @@ func (c *Client) doRequest(ctx context.Context, rawURL string, res interface{}, 
 		return fmt.Errorf("baton-sentinel-one: failed to build request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req, uhttp.WithJSONResponse(res))
-	if resp != nil {
-		defer resp.Body.Close()
-	}
+	_, err = c.httpClient.Do(req, uhttp.WithJSONResponse(res))
 	if err != nil {
 		return fmt.Errorf("baton-sentinel-one: request failed: %w", err)
 	}
