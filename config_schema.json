@@ -1,0 +1,124 @@
+{
+  "displayName": "SentinelOne",
+  "fields": [
+    {
+      "description": "The log level: debug, info, warn, error",
+      "isOps": true,
+      "name": "log-level",
+      "stringField": {
+        "defaultValue": "info"
+      }
+    },
+    {
+      "description": "The timestamp indicating when debug-level logging should expire",
+      "isOps": true,
+      "name": "log-level-debug-expires-at",
+      "stringField": {}
+    },
+    {
+      "description": "The maximum size of the local in-memory session store cache in bytes.",
+      "intField": {
+        "defaultValue": "15728640"
+      },
+      "isOps": true,
+      "name": "session-store-maximum-size"
+    },
+    {
+      "description": "The endpoint of the OpenTelemetry collector to send observability data to (used for both tracing and logging if specific endpoints are not provided)",
+      "isOps": true,
+      "name": "otel-collector-endpoint",
+      "stringField": {}
+    },
+    {
+      "description": "Path to a file containing a PEM-encoded certificate to use as a CA for TLS connections to the OpenTelemetry collector",
+      "isOps": true,
+      "name": "otel-collector-endpoint-tls-cert-path",
+      "stringField": {}
+    },
+    {
+      "description": "A PEM-encoded certificate to use as a CA for TLS connections to the OpenTelemetry collector",
+      "isOps": true,
+      "name": "otel-collector-endpoint-tls-cert",
+      "stringField": {}
+    },
+    {
+      "boolField": {},
+      "description": "Allow insecure connections to the OpenTelemetry collector",
+      "isOps": true,
+      "name": "otel-collector-endpoint-tls-insecure"
+    },
+    {
+      "boolField": {},
+      "description": "Disable OpenTelemetry tracing",
+      "isOps": true,
+      "name": "otel-tracing-disabled"
+    },
+    {
+      "boolField": {},
+      "description": "Disable OpenTelemetry logging",
+      "isOps": true,
+      "name": "otel-logging-disabled"
+    },
+    {
+      "boolField": {},
+      "description": "Enable the HTTP health check endpoint",
+      "isOps": true,
+      "name": "health-check"
+    },
+    {
+      "description": "Port for the HTTP health check endpoint",
+      "intField": {
+        "defaultValue": "8081"
+      },
+      "isOps": true,
+      "name": "health-check-port"
+    },
+    {
+      "description": "Bind address for health check server (127.0.0.1 for localhost-only)",
+      "isOps": true,
+      "name": "health-check-bind-address",
+      "stringField": {
+        "defaultValue": "127.0.0.1"
+      }
+    },
+    {
+      "description": "HTTP client timeout in seconds (max 1800)",
+      "intField": {
+        "defaultValue": "300",
+        "rules": {
+          "gte": "1",
+          "lte": "1800"
+        }
+      },
+      "isOps": true,
+      "name": "http-timeout-seconds"
+    },
+    {
+      "description": "API token for your management console used to authenticate with SentinelOne API.",
+      "displayName": "API token",
+      "isRequired": true,
+      "isSecret": true,
+      "name": "api-token",
+      "placeholder": "Your SentinelOne API token",
+      "stringField": {
+        "rules": {
+          "isRequired": true
+        }
+      }
+    },
+    {
+      "description": "Your management console URL.",
+      "displayName": "SentinelOne base URL",
+      "isRequired": true,
+      "name": "management-console-url",
+      "placeholder": "Your SentinelOne base URL",
+      "stringField": {
+        "rules": {
+          "isRequired": true
+        }
+      }
+    }
+  ],
+  "helpUrl": "/docs/baton/sentinelone",
+  "iconUrl": "/static/app-icons/sentinelone.svg"
+}
