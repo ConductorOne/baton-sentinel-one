@@ -1,78 +1,78 @@
 {
-  "@type": "type.googleapis.com/c1.connector.v2.ConnectorCapabilities",
-  "connectorCapabilities": [
-    "CAPABILITY_SYNC"
-  ],
-  "credentialDetails": {},
-  "resourceTypeCapabilities": [
+  "@type":  "type.googleapis.com/c1.connector.v2.ConnectorCapabilities",
+  "resourceTypeCapabilities":  [
     {
-      "capabilities": [
+      "resourceType":  {
+        "id":  "account",
+        "displayName":  "Account"
+      },
+      "capabilities":  [
         "CAPABILITY_SYNC"
       ],
-      "permissions": {},
-      "resourceType": {
-        "displayName": "Account",
-        "id": "account"
-      }
+      "permissions":  {}
     },
     {
-      "capabilities": [
-        "CAPABILITY_SYNC"
-      ],
-      "permissions": {},
-      "resourceType": {
-        "displayName": "Role",
-        "id": "role",
-        "traits": [
+      "resourceType":  {
+        "id":  "role",
+        "displayName":  "Role",
+        "traits":  [
           "TRAIT_ROLE"
         ]
-      }
-    },
-    {
-      "capabilities": [
+      },
+      "capabilities":  [
         "CAPABILITY_SYNC"
       ],
-      "permissions": {},
-      "resourceType": {
-        "annotations": [
-          {
-            "@type": "type.googleapis.com/c1.connector.v2.SkipEntitlementsAndGrants"
-          }
-        ],
-        "displayName": "Service User",
-        "id": "service_user",
-        "traits": [
+      "permissions":  {}
+    },
+    {
+      "resourceType":  {
+        "id":  "service_user",
+        "displayName":  "Service User",
+        "traits":  [
           "TRAIT_USER"
-        ]
-      }
-    },
-    {
-      "capabilities": [
-        "CAPABILITY_SYNC"
-      ],
-      "permissions": {},
-      "resourceType": {
-        "displayName": "Site",
-        "id": "site"
-      }
-    },
-    {
-      "capabilities": [
-        "CAPABILITY_SYNC"
-      ],
-      "permissions": {},
-      "resourceType": {
-        "annotations": [
-          {
-            "@type": "type.googleapis.com/c1.connector.v2.SkipEntitlementsAndGrants"
-          }
         ],
-        "displayName": "User",
-        "id": "user",
-        "traits": [
-          "TRAIT_USER"
+        "annotations":  [
+          {
+            "@type":  "type.googleapis.com/c1.connector.v2.SkipEntitlementsAndGrants"
+          }
         ]
-      }
+      },
+      "capabilities":  [
+        "CAPABILITY_SYNC"
+      ],
+      "permissions":  {}
+    },
+    {
+      "resourceType":  {
+        "id":  "site",
+        "displayName":  "Site"
+      },
+      "capabilities":  [
+        "CAPABILITY_SYNC"
+      ],
+      "permissions":  {}
+    },
+    {
+      "resourceType":  {
+        "id":  "user",
+        "displayName":  "User",
+        "traits":  [
+          "TRAIT_USER"
+        ],
+        "annotations":  [
+          {
+            "@type":  "type.googleapis.com/c1.connector.v2.SkipEntitlementsAndGrants"
+          }
+        ]
+      },
+      "capabilities":  [
+        "CAPABILITY_SYNC"
+      ],
+      "permissions":  {}
     }
-  ]
+  ],
+  "connectorCapabilities":  [
+    "CAPABILITY_SYNC"
+  ],
+  "credentialDetails":  {}
 }
