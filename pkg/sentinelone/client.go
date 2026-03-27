@@ -275,17 +275,18 @@ func (c *Client) doRequest(ctx context.Context, rawURL string, res interface{}, 
 		ctx,
 		http.MethodGet,
 		parsedURL,
-		uhttp.WithHeader("Accept", "application/json"),
+		uhttp.WithAcceptJSONHeader(),
 		uhttp.WithHeader("Authorization", fmt.Sprintf("ApiToken %s", c.token)),
 	)
 	if err != nil {
 		return fmt.Errorf("baton-sentinel-one: failed to build request: %w", err)
 	}
 
-	_, err = c.httpClient.Do(req, uhttp.WithJSONResponse(res))
+	rawResp, err := c.httpClient.Do(req, uhttp.WithJSONResponse(res))
 	if err != nil {
 		return fmt.Errorf("baton-sentinel-one: request failed: %w", err)
 	}
+	defer rawResp.Body.Close()
 
 	if err := handleJSONErrors(res); err != nil {
 		return err
