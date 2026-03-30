@@ -34,9 +34,6 @@ jobs:
       - name: Run and save capabilities output
         run: ./connector capabilities > baton_capabilities.json
 
-      - name: Run and save config output
-        run: ./connector config > config_schema.json
-
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
@@ -70,9 +67,6 @@ jobs:
 
       - name: Run and save capabilities output
         run: ./connector capabilities > baton_capabilities.json
-
-      - name: Run and save config output
-        run: ./connector config > config_schema.json
 
       # Check 1: verify committed JSON matches binary output
       - name: Verify committed metadata is up to date
