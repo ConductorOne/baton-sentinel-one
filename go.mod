@@ -3,11 +3,12 @@ module github.com/conductorone/baton-sentinel-one
 go 1.25.2
 
 require (
-	github.com/conductorone/baton-sdk v0.8.14
+	github.com/conductorone/baton-sdk v0.8.15
 	github.com/ennyjfrick/ruleguard-logfatal v0.0.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/quasilyte/go-ruleguard/dsl v0.3.23
 	go.uber.org/zap v1.27.1
+	google.golang.org/grpc v1.78.0
 )
 
 require (
@@ -111,7 +112,6 @@ require (
 	golang.org/x/text v0.31.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20251202230838-ff82c1b0f217 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
-	google.golang.org/grpc v1.78.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
