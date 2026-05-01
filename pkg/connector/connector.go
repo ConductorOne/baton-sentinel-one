@@ -14,6 +14,8 @@ import (
 	"github.com/conductorone/baton-sentinel-one/pkg/sentinelone"
 )
 
+const limitKey = "limit"
+
 type SentinelOne struct {
 	client *sentinelone.Client
 }
@@ -73,34 +75,34 @@ func (s *SentinelOne) Metadata(ctx context.Context) (*v2.ConnectorMetadata, erro
 // It's not defined which role is needed to fetch all resources so we need to check that user has access to all of them.
 func (s *SentinelOne) Validate(ctx context.Context) (annotations.Annotations, error) {
 	_, _, err := s.client.GetAccounts(ctx, sentinelone.ParamsMap{
-		"limit": "1",
+		limitKey: "1",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get accounts: %w", err)
 	}
 
 	_, _, err = s.client.GetSites(ctx, sentinelone.ParamsMap{
-		"limit": "1",
+		limitKey: "1",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get sites: %w", err)
 	}
 	_, _, err = s.client.GetUsers(ctx, sentinelone.ParamsMap{
-		"limit": "1",
+		limitKey: "1",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get users: %w", err)
 	}
 
 	_, _, err = s.client.GetServiceUsers(ctx, sentinelone.ParamsMap{
-		"limit": "1",
+		limitKey: "1",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get service users: %w", err)
 	}
 
 	_, _, err = s.client.GetPredefinedRoles(ctx, sentinelone.ParamsMap{
-		"limit": "1",
+		limitKey: "1",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get roles: %w", err)
