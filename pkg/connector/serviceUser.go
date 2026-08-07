@@ -33,8 +33,6 @@ func serviceUserResource(serviceUser *sentinelone.ServiceUser, parentResourceID 
 	}
 
 	userTraitOptions := []rs.UserTraitOption{
-		rs.WithUserProfile(profile),
-		rs.WithStatus(v2.UserTrait_Status_STATUS_UNSPECIFIED),
 		rs.WithAccountType(v2.UserTrait_ACCOUNT_TYPE_SERVICE),
 	}
 
@@ -43,6 +41,8 @@ func serviceUserResource(serviceUser *sentinelone.ServiceUser, parentResourceID 
 		resourceTypeServiceUser,
 		serviceUser.ID,
 		userTraitOptions,
+		rs.WithResourceProfile(profile),
+		rs.WithResourceStatus(v2.Status_RESOURCE_STATUS_UNSPECIFIED, ""),
 		rs.WithParentResourceID(parentResourceID),
 	)
 	if err != nil {

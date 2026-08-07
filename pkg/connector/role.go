@@ -56,15 +56,14 @@ func roleResource(ctx context.Context, role *sentinelone.Role) (*v2.Resource, er
 		"role_id":   id,
 	}
 
-	roleTraitOptions := []rs.RoleTraitOption{
-		rs.WithRoleProfile(profile),
-	}
+	roleTraitOptions := []rs.RoleTraitOption{}
 
 	resource, err := rs.NewRoleResource(
 		name,
 		resourceTypeRole,
 		id,
 		roleTraitOptions,
+		rs.WithResourceProfile(profile),
 	)
 
 	if err != nil {
