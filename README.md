@@ -25,7 +25,7 @@ baton resources
 ## docker
 
 ```
-docker run --rm -v $(pwd):/out -e BATON_API_TOKEN=sentinelOneApiToken BATON_MANAGEMENT_CONSOLE_URL=https://your-management-url.net ghcr.io/conductorone/baton-sentinel-one:latest -f "/out/sync.c1z"
+docker run --rm -v $(pwd):/out -e BATON_API_TOKEN=sentinelOneApiToken BATON_MANAGEMENT_CONSOLE_URL=https://your-management-url.net public.ecr.aws/conductorone/baton-sentinel-one:latest -f "/out/sync.c1z"
 docker run --rm -v $(pwd):/out ghcr.io/conductorone/baton:latest -f "/out/sync.c1z" resources
 ```
 
